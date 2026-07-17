@@ -146,16 +146,6 @@ npm run build
 
 ---
 
-## 📸 Screenshots
-
-> Add screenshots here after uploading them.
-
-- Dashboard
-- Deployment Workflow
-- AI Insights
-- Notifications
-- Deployment History
-
 ---
 
 ## 🔮 Future Improvements

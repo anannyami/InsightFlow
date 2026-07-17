@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { X, AlertTriangle, Rocket, MessageCircle, Sparkles } from "lucide-react";
-import { notifications, type AppNotification } from "@/lib/mock-data";
+import { type AppNotification } from "@/lib/mock-data";
+import { useNotifications } from "@/lib/deployment-store";
 
 const kindStyles: Record<AppNotification["kind"], { icon: any; tone: string }> = {
   incident: { icon: AlertTriangle, tone: "text-destructive bg-destructive/10" },
@@ -16,7 +17,8 @@ export function NotificationsPanel({
   open: boolean;
   onClose: () => void;
 }) {
-  const unread = notifications.filter((n) => !n.read).length;
+  const notifications = useNotifications();
+  const unread = notifications.filter((n: AppNotification) => !n.read).length;
   return (
     <AnimatePresence>
       {open && (
@@ -52,7 +54,7 @@ export function NotificationsPanel({
             </div>
 
             <div className="flex-1 space-y-1 overflow-y-auto p-3">
-              {notifications.map((n, i) => {
+              {notifications.map((n: AppNotification, i: number) => {
                 const style = kindStyles[n.kind];
                 const Icon = style.icon;
                 return (

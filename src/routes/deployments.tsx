@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 import { GitCommit, Rocket } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
-import { deployments, type Deployment } from "@/lib/mock-data";
+import { type Deployment } from "@/lib/mock-data";
+import { useDeployments } from "@/lib/deployment-store";
 import { Button } from "@/components/ui/button";
+import { NewDeploymentDialog } from "@/components/deployments/new-deployment-dialog";
 
 export const Route = createFileRoute("/deployments")({
   head: () => ({
@@ -29,6 +32,8 @@ const envStyle: Record<Deployment["env"], string> = {
 };
 
 function DeploymentsPage() {
+  const deployments = useDeployments();
+  const [open, setOpen] = useState(false);
   return (
     <div>
       <PageHeader
@@ -36,15 +41,19 @@ function DeploymentsPage() {
         title="Deployments"
         description="Every deploy across every environment, wired into logs, traces and rollbacks."
         actions={
-          <Button className="rounded-xl bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-95">
-            <Rocket className="mr-2 h-4 w-4" /> Deploy
+          <Button
+            onClick={() => setOpen(true)}
+            className="rounded-xl bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-95"
+          >
+            <Rocket className="mr-2 h-4 w-4" /> New deployment
           </Button>
         }
       />
+      <NewDeploymentDialog open={open} onOpenChange={setOpen} />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {(["success", "running", "queued", "failed"] as const).map((s, i) => {
-          const count = deployments.filter((d) => d.status === s).length;
+          const count = deployments.filter((d: Deployment) => d.status === s).length;
           const st = statusStyle[s];
           return (
             <motion.div
@@ -68,14 +77,17 @@ function DeploymentsPage() {
         <div className="mb-4 text-sm font-semibold">Deployment timeline</div>
         <ol className="relative space-y-4 pl-6">
           <span className="absolute bottom-2 left-2 top-2 w-px bg-border" />
-          {deployments.map((d, i) => {
+          <AnimatePresence initial={false}>
+          {deployments.map((d: Deployment, i: number) => {
             const st = statusStyle[d.status];
             return (
               <motion.li
                 key={d.id}
-                initial={{ opacity: 0, x: 6 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.04 }}
+                layout
+                initial={{ opacity: 0, x: -12, scale: 0.98 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: 12 }}
+                transition={{ delay: Math.min(i, 6) * 0.04, type: "spring", stiffness: 300, damping: 28 }}
                 className="relative"
               >
                 <div className="absolute -left-6 top-2 grid h-4 w-4 place-items-center rounded-full bg-card ring-2 ring-border">
@@ -115,6 +127,7 @@ function DeploymentsPage() {
               </motion.li>
             );
           })}
+          </AnimatePresence>
         </ol>
       </div>
     </div>

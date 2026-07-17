@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { useState } from "react";
 import {
   Area,
   AreaChart,
@@ -20,6 +21,8 @@ import { MetricCard } from "@/components/shared/metric-card";
 import { PageHeader, SectionCard } from "@/components/shared/page-header";
 import { metrics, trafficData, revenueData, trafficSources, deployments, aiInsights } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
+import { useExtraDeploymentCount } from "@/lib/deployment-store";
+import { NewDeploymentDialog } from "@/components/deployments/new-deployment-dialog";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -27,6 +30,13 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const today = format(new Date(), "EEEE, MMMM d");
+  const [deployOpen, setDeployOpen] = useState(false);
+  const extra = useExtraDeploymentCount();
+  const liveMetrics = metrics.map((m) => {
+    if (m.label !== "Deployments") return m;
+    const newRaw = m.raw + extra;
+    return { ...m, raw: newRaw, value: newRaw.toString() };
+  });
   return (
     <div className="space-y-6">
       <motion.section
@@ -52,15 +62,16 @@ function Index() {
             <Button className="rounded-xl bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-95">
               <Sparkles className="mr-2 h-4 w-4" /> Ask InsightFlow AI
             </Button>
-            <Button variant="outline" className="rounded-xl">
+            <Button variant="outline" className="rounded-xl" onClick={() => setDeployOpen(true)}>
               <Rocket className="mr-2 h-4 w-4" /> New deployment
             </Button>
           </div>
         </div>
       </motion.section>
+      <NewDeploymentDialog open={deployOpen} onOpenChange={setDeployOpen} />
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {metrics.map((m, i) => (
+        {liveMetrics.map((m, i) => (
           <MetricCard key={m.label} {...m} index={i} />
         ))}
       </section>

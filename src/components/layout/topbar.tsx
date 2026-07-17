@@ -22,10 +22,12 @@ export function TopBar({
   onOpenSearch,
   onOpenNotifications,
   onOpenMobileNav,
+  onOpenChat,
 }: {
   onOpenSearch: () => void;
   onOpenNotifications: () => void;
   onOpenMobileNav: () => void;
+  onOpenChat: () => void;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const title = routeTitles[pathname] ?? "InsightFlow";
@@ -65,8 +67,15 @@ export function TopBar({
       </button>
 
       <div className="flex items-center gap-1">
-        <Button variant="ghost" size="icon" className="rounded-xl" aria-label="Messages">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative rounded-xl"
+          onClick={onOpenChat}
+          aria-label="Ask InsightFlow AI"
+        >
           <MessageSquare className="h-4 w-4" />
+          <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-gradient-primary shadow-glow" />
         </Button>
         <Button
           variant="ghost"

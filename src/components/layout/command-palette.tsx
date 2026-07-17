@@ -21,9 +21,11 @@ import {
   FileText,
   Settings,
   LifeBuoy,
-  Plus,
-  Zap,
+  MessageSquare,
+  Terminal,
 } from "lucide-react";
+import { aiCommandExamples } from "@/lib/ai-mock";
+import { openAiChat } from "@/lib/ai-chat-store";
 
 const items = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -59,18 +61,35 @@ export function CommandPalette({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onOpenChange]);
 
+  const runAi = (prompt: string) => {
+    onOpenChange(false);
+    openAiChat(prompt);
+  };
+
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>
-      <CommandInput placeholder="Search everything…" />
+      <CommandInput placeholder="Search or ask InsightFlow AI in natural language…" />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup heading="Quick actions">
-          <CommandItem onSelect={() => onOpenChange(false)}>
-            <Plus className="mr-2 h-4 w-4" /> Create new report
+        <CommandGroup heading="Ask AI">
+          <CommandItem
+            onSelect={() => {
+              onOpenChange(false);
+              openAiChat();
+            }}
+          >
+            <MessageSquare className="mr-2 h-4 w-4 text-primary" />
+            Open InsightFlow AI chat
           </CommandItem>
-          <CommandItem onSelect={() => onOpenChange(false)}>
-            <Zap className="mr-2 h-4 w-4" /> Trigger deployment
-          </CommandItem>
+          {aiCommandExamples.slice(0, 5).map((c) => (
+            <CommandItem key={c} onSelect={() => runAi(c)}>
+              <Terminal className="mr-2 h-4 w-4 text-muted-foreground" />
+              <span className="truncate">{c}</span>
+              <span className="ml-auto rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                AI
+              </span>
+            </CommandItem>
+          ))}
         </CommandGroup>
         <CommandSeparator />
         <CommandGroup heading="Navigate">

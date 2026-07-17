@@ -7,6 +7,8 @@ import { TopBar } from "./topbar";
 import { CommandPalette } from "./command-palette";
 import { NotificationsPanel } from "./notifications-panel";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { AiChatPanel } from "@/components/ai/ai-chat-panel";
+import { openAiChat } from "@/lib/ai-chat-store";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [cmdOpen, setCmdOpen] = useState(false);
@@ -33,6 +35,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           onOpenSearch={() => setCmdOpen(true)}
           onOpenNotifications={() => setNotifOpen(true)}
           onOpenMobileNav={() => setMobileOpen(true)}
+          onOpenChat={() => openAiChat()}
         />
         <main className="flex-1 px-4 py-6 md:px-8 md:py-8">
           <AnimatePresence mode="wait">
@@ -52,6 +55,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
       <NotificationsPanel open={notifOpen} onClose={() => setNotifOpen(false)} />
+      <AiChatPanel />
     </div>
   );
 }

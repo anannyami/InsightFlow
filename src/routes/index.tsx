@@ -23,6 +23,7 @@ import { metrics, trafficData, revenueData, trafficSources, deployments, aiInsig
 import { Button } from "@/components/ui/button";
 import { useExtraDeploymentCount } from "@/lib/deployment-store";
 import { NewDeploymentDialog } from "@/components/deployments/new-deployment-dialog";
+import { openAiChat } from "@/lib/ai-chat-store";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -59,7 +60,7 @@ function Index() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button className="rounded-xl bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-95">
+            <Button onClick={() => openAiChat()} className="rounded-xl bg-gradient-primary text-primary-foreground shadow-glow hover:opacity-95">
               <Sparkles className="mr-2 h-4 w-4" /> Ask InsightFlow AI
             </Button>
             <Button variant="outline" className="rounded-xl" onClick={() => setDeployOpen(true)}>
